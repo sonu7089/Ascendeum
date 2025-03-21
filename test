@@ -1,0 +1,73 @@
+First: 
+Select d.name as department_name, ROUND(AVG(e.age),2) as avg_age
+from employees e left join departments d on e.department_id = d.id 
+GROUP BY d.name
+
+Output:
+
++-----------------+---------+
+| department_name | avg_age |
++-----------------+---------+
+| HR              |   38.40 |
+| Finance         |   41.45 |
+| Marketing       |   41.40 |
+| Operations      |   38.55 |
+| IT              |   37.55 |
++-----------------+---------+
+
+
+Second: 
+WITH CTE AS(
+  SELECT d.name, count(*) as emp_cnt
+  FROM employees e LEFT JOIN departments d 
+  ON e.department_id = d.id
+  WHERE e.age > 40
+  GROUP BY department_id
+)
+
+SELECT name as DepartmentName FROM CTE WHERE emp_cnt = (SELECT MAX(emp_cnt) from CTE)
+
+Output:
+
++----------------+---------+
+| DepartmentName | emp_cnt |
++----------------+---------+
+| Operations     |     101 |
++----------------+---------+
+
+Third: 
+SELECT COUNT(*) from employees 
+where joining_date <= current_date and joining_date >= DATE_SUB(current_date, interval 100 DAY)
+
+Output:
+
++----------+
+| COUNT(*) |
++----------+
+|      100 |
++----------+
+
+Fourth: 
+UPDATE employees
+SET joining_date = current_date - 1 
+where department_id = 2
+
+Fifth: 
+WITH CTE AS(
+  SELECT 
+  CASE
+    WHEN department_id = 2 THEN DATE_SUB(current_date, interval 1 DAY)
+    ELSE joining_date 
+  END AS date 
+  FROM employees
+)
+
+SELECT count(*) from CTE 
+where date <= current_date and date >= DATE_SUB(current_date, interval 100 DAY)
+
+Output: 
++----------+
+| count(*) |
++----------+
+|      280 |
++----------+
